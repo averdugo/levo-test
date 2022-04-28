@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [7.3, 7.4]
+        php: [7.4]
 
     name: Test - PHP ${{ matrix.php }}
 
@@ -62,7 +62,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.3
+          php-version: 7.4
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd
           coverage: none
 
