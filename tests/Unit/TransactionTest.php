@@ -14,7 +14,6 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_store()
     {
-        $this->seed();
         
         $response = $this->postJson('/api/transaction', [
             "card_number" => "6011328012741707",
