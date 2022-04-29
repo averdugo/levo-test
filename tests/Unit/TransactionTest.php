@@ -4,9 +4,12 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TransactionTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic unit test example.
      *
@@ -14,7 +17,8 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_store()
     {
-        
+        $this->seed();
+
         $response = $this->postJson('/api/transaction', [
             "card_number" => "6011328012741707",
             "type" => "deposito",
@@ -26,6 +30,8 @@ class TransactionTest extends TestCase
 
     public function test_transaction_store_badrequest()
     {
+        $this->seed();
+
         $response = $this->postJson('/api/transaction', [
             "card_number" => "6011328012741707",
             "amount" => 100000
@@ -36,6 +42,8 @@ class TransactionTest extends TestCase
 
     public function test_transaction_store_notfound()
     {
+        $this->seed();
+
         $response = $this->postJson('/api/transaction', [
             "card_number" => "555",
             "type" => "deposito",
@@ -49,6 +57,8 @@ class TransactionTest extends TestCase
 
     public function test_transaction_store_moreamount()
     {
+        $this->seed();
+
         $response = $this->postJson('/api/transaction', [
             "card_number" => "6011328012741707",
             "type" => "retiro",
@@ -62,6 +72,8 @@ class TransactionTest extends TestCase
     
     public function test_transaction_notification_failretire()
     {
+        $this->seed();
+
         Notification::fake();
 
         $response = $this->postJson('/api/transaction', [
