@@ -24,20 +24,18 @@ class UsersTableSeeder extends Seeder
             'type' => 'admin'
         ]);
 
-        for ($i = 0; $i < 10; $i++) {
-            $user = User::create([
-                'name' => $faker->name,
-                'email' => $faker->email,
-                'password' => $password,
-                'type' => 'client'
-            ]);
+        $user = User::create([
+            'name' => 'Aldo Verdugo',
+            'email' => $faker->email,
+            'password' => $password,
+            'type' => 'client'
+        ]);
 
-            Account::create([
-                'user_id'=>$user->id,
-                'card_number' => $faker->creditCardNumber,        
-                'balance'=> $faker->numberBetween($min = 1000, $max = 20000),
-                'type'=> $faker->creditCardType          
-            ]);
-        }
+        Account::create([
+            'user_id'=>$user->id,
+            'card_number' => '6011328012741707',        
+            'balance'=> $faker->numberBetween($min = 1000, $max = 20000),
+            'type'=> $faker->creditCardType          
+        ]);
     }
 }

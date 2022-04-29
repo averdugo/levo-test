@@ -38,6 +38,6 @@ class TransactionPostRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
             'status' => true
-        ], 422));
+        ], 400));
     }
 }

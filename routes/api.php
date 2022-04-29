@@ -15,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('api')->group(function () {
-    Route::resource('/transaction', 'TransactionController');
+    Route::post('/transaction', 'TransactionController@store');
 });
 
