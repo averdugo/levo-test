@@ -13,8 +13,13 @@ class Account extends Model
     ];
 
 
-    public function account()
+    public function transactions()
     {
         return $this->hasMany('App\Transaction');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
     }
 }

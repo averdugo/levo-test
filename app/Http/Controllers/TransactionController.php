@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\{Transaction, Account};
+use App\{Transaction, Account, User};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\TransactionPostRequest;
 use Carbon\Carbon;
+use App\Notifications\{FailedRetire, CreditMail, AdminAlert};
 
 class TransactionController extends Controller
 {
@@ -30,7 +31,7 @@ class TransactionController extends Controller
         return $this->responseHandler('Deposito Exitoso', 200, $trans );
     }
 
-    public function checkTransactions($request){
+    public function checkTransactions($request, $account){
         $now = Carbon::now();
         
         $transactions = Transaction::whereDate('created_at', $now)
@@ -47,11 +48,35 @@ class TransactionController extends Controller
         }
 
         if($noFounds >= 3){
+            $account->user->notify(new CreditMail());
             return array('msg'=>'Demasiados Intentos sin Saldo', 'error'=>true);
         }
         
         if($total > 10000){
-            return array('msg'=>'Ah superado el limite por hoy', 'error'=>true);
+            
+            $trans = Transaction::create([
+                'card_number'=> $request->card_number,
+                'type'=> $request->type,
+                'status'=> 'fallida',
+                'amount'=> $request->amount,
+                'observation'=> 'Ah superado el limite por hoy',
+            ]);
+
+            $account->user->notify(new FailedRetire($trans));
+
+            $last48 = Carbon::now()->subHours(48);
+            $lastTrans = Transaction::whereBetween('created_at', [$last48, $now])
+                                    ->where('card_number', $request->card_number)
+                                    ->get();
+
+            
+            
+            $adminUser = User::where('type', 'admin')->first();
+
+            $adminUser->notify(new AdminAlert($lastTrans, $account->user->name));
+
+            
+            return array('msg'=>$trans->observation, 'error'=>true);
         }
 
         
@@ -69,6 +94,9 @@ class TransactionController extends Controller
                 'amount'=> $request->amount,
                 'observation'=> 'Saldo insuficiente',
             ]);
+
+            $account->user->notify(new FailedRetire($trans));
+
             return $this->responseHandler('Saldo insuficiente', 200, $trans );
         }else{
          
@@ -94,7 +122,7 @@ class TransactionController extends Controller
             return $this->responseHandler('Cuenta No Encontrada', 404 );
         }
 
-        $checkTransaction = $this->checkTransactions($request);
+        $checkTransaction = $this->checkTransactions($request, $account);
         
         if($checkTransaction['error']){
             return $this->responseHandler($checkTransaction['msg'], 200 );
