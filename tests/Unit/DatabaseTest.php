@@ -30,6 +30,8 @@ class DatabaseTest extends TestCase
 
     public function test_database_account()
     {
+        $this->seed();
+        
         $this->assertDatabaseHas('accounts',[
             'card_number' => '6011328012741707',
         ]);
