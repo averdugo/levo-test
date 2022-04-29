@@ -42,8 +42,11 @@ jobs:
       - name: Generate key
         run: php artisan key:generate
 
-      - name: Generate key
-        run: php artisan migrate --seeds
+      - name: Migrate
+        run: php artisan migrate
+
+      - name: Seed
+        run: php artisan db:seed
 
       - name: Execute tests
         run: vendor/bin/phpunit --verbose
